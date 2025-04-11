@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather App</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Raleway:wght@700&family=Roboto:wght@600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-black min-h-screen font-mont font-semibold">
+    <div
+      class="w-full text-white rounded-3xl py-10 px-9 mt-24 mx-auto mb-0 max-w-lg bg-gradient-to-r from-blue-300 to-blue-500"
+    >
+      <div class="search w-full flex items-center justify-between">
+        <input
+          class="border-none outline-none bg-white opacity-30 placeholder:text-blue-400 text-blue-600 py-2 px-6 h-14 rounded-3xl flex-1 mr-4 text-sm"
+          type="text"
+          name=""
+          id="name"
+          placeholder="enter city name"
+          spellcheck="false"
+        />
+        <button
+          class="border-none flex justify-center items-center outline-none rounded-full h-14 w-14 cursor-pointer bg-white opacity-30"
+        >
+          <img src="img/search.png" alt="search" class="w-6" />
+        </button>
+      </div>
+      <div class="error text-left ml-2 mt-4 text-sm hidden">
+        <p>Invalid city name</p>
+      </div>
+      <div class="hidden weather">
+        <img src="img/rain.png" class="weather-icon w-40 mt-8 mx-auto" />
+        <h1 class="text-7xl text-center mt-1" id="temp">22°C</h1>
+        <h2 class="city text-2xl text-center" id="city">Kyiv</h2>
+        <div
+          class="flex items-center justify-between mt-10 py-0 text-left font-medium"
+        >
+          <div class="flex gap-2">
+            <img src="img/humidity.png" alt="" class="w-20" />
+            <div class="flex flex-col justify-center gap-2">
+              <p class="text-lg -mt-1" id="humidity">50%</p>
+              <p class="text-sm">Humidity</p>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <img src="img/wind.png" alt="" class="w-20" />
+            <div class="flex flex-col justify-center gap-2">
+              <p class="text-lg -mt-1" id="wind">15 km/h</p>
+              <p class="text-sm">Wind Speed</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      const apiKey = "248133ec738ecabc0363ee6af57fdf26";
+      const apiUrl =
+        "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
+      const searchBox = document.querySelector(".search input");
+      const searchBtn = document.querySelector(".search button");
+      const weatherIcon = document.querySelector(".weather-icon");
+
+      async function checkWeather(city) {
+        const response = await fetch(apiUrl + city + `&appid=${apiKey}`);
+
+        if (response.status == 404) {
+          document.querySelector(".error").style.display = "block";
+          document.querySelector(".weather").style.display = "none";
+        } else {
+          var data = await response.json();
+
+          document.querySelector("#city").innerHTML = data.name;
+          document.querySelector("#temp").innerHTML =
+            Math.round(data.main.temp) + "°C";
+          document.querySelector("#humidity").innerHTML =
+            data.main.humidity + "%";
+          document.querySelector("#wind").innerHTML = data.wind.speed + "km/h";
+
+          const weather = data.weather[0].main.toLowerCase();
+          weatherIcon.src = `img/${weather}.png`;
+
+          document.querySelector(".weather").style.display = "block";
+          document.querySelector(".error").style.display = "none";
+        }
+      }
+      searchBtn.addEventListener("click", () => {
+        checkWeather(searchBox.value);
+      });
+    </script>
+  </body>
+</html>
